@@ -20,4 +20,28 @@ const addFood = async (req, res) => {
   }
 };
 
-export { addFood };
+//all food list
+const listFood = async (req, res) => {
+  try {
+    const foods = await foodModel.find({});
+    res.json({ success: true, data: foods });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error });
+  }
+};
+
+//remove food item
+
+const removeFood = async (req, res) => {
+  try {
+    const food = await foodModel.findById(req.body.id);
+    fs.unlink(`uploads/${food.image}`, () => {}); //to remove the pictures from the upload folder
+    await foodModel.findByIdAndDelete(req.body.id);
+    res.json({ success: true, message: "food removed" });
+  } catch (error) {
+    console.log(error);
+    res.json({ succes: false, message: error });
+  }
+};
+export { addFood, listFood, removeFood };

@@ -15,8 +15,9 @@ app.use(cors()); //access the backend from any frontend
 //db connection
 connectDB();
 
-//api endpoints
-app.use("/api/food",foodRouter)
+//api endpoints that are in use.
+app.use("/api/food", foodRouter); //on the route /api/food our food router is working any enpoit added to that is mentioned after that
+app.use("/images", express.static("uploads"));
 
 app.get("/", (req, res) => {
   res.send("API Working");

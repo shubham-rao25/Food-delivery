@@ -7,7 +7,7 @@ const foodSchema = new mongoose.Schema({
   image: { type: String, required: true },
   category: { type: String, required: true },
 });
-
+// if model is created it will be used else new model of same name is created
 const foodModel = mongoose.models.food || mongoose.model("food", foodSchema);
 
 export default foodModel;

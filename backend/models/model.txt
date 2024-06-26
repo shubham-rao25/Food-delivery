@@ -1,1 +1,3 @@
 this folder is created to store the models or schema of the mongoDb files for all the required fields
+
+first always create a schema and then create a model out of the the schema

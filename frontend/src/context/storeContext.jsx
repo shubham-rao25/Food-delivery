@@ -1,11 +1,14 @@
 import { createContext, useEffect, useReducer, useState } from "react";
-import { food_list } from "../assets/assets";
 export const StoreContext = createContext(null);
+import axios from "axios";
+
+//this is the context that can be accessed by all the components of the website globally
 
 const StorContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
   const url = "http://localhost:4000";
   const [token, setToken] = useState("");
+  const [food_list, setFoodList] = useState([]);
 
   // this is the function that helps to add item to the cart
   const addToCart = (itemId) => {
@@ -42,15 +45,22 @@ const StorContextProvider = (props) => {
     return totalAmount;
   };
 
-  //this is the context that can be accessed by all the components of the website globally
+  //function to load food items from database
+  const fetchFood = async () => {
+    const response = await axios.get(url + "/api/food/list");
+    setFoodList(response.data.data);
+  };
 
   //this is the used effect inorder to keep the user logged in even if he refreshed
   //no logout on refresh
-
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      setToken(localStorage.getItem("token"));
+    async function loadData() {
+      await fetchFood();
+      if (localStorage.getItem("token")) {
+        setToken(localStorage.getItem("token"));
+      }
     }
+    loadData();
   }, []);
   const contextValue = {
     food_list,

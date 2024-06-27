@@ -20,7 +20,7 @@ connectDB();
 //api endpoints that are in use.
 app.use("/api/food", foodRouter); //on the route /api/food our food router is working any enpoit added to that is mentioned after that
 app.use("/images", express.static("uploads"));
-app.unsubscribe("/api/user", userRouter);
+app.use("/api/user", userRouter);
 
 app.get("/", (req, res) => {
   res.send("API Working");

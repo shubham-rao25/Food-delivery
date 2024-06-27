@@ -3,13 +3,36 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import validator from "validator";
 
-//login user
-const loginUser = async (req, res) => {};
-
-//creation of the token
-
+//creation of the token for the user
+//sent to the user at the time of login
+//jwt.secret is present inside dotenv file
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET);
+};
+
+//login user
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    //if we have a user with the provided email id then it is stored in the variable USER
+    //getting detail from the database
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.json({ success: false, message: "User doesn't exist" });
+    }
+
+    // we need to compare the provided password with one stored in database
+    //this is done using bcrypt inorder to compare the hashed password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.json({ success: false, message: "Invalid credentials" });
+    }
+    const token = createToken(user._id);
+    res.json({ success: true, token });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "error" });
+  }
 };
 
 //register user
@@ -24,7 +47,7 @@ const registerUser = async (req, res) => {
     }
 
     //validating email format and strong password
-
+    //for validating we will be using validator package
     if (!validator.isEmail(email)) {
       return res.json({
         success: false,
@@ -39,6 +62,7 @@ const registerUser = async (req, res) => {
       });
     }
 
+    //using bcrypt...
     //hashing the user password(encrypting the password)
     //we can set the genSalt value from 5-15
     //as Hight the number goes the password is encrypted that strong
@@ -52,7 +76,10 @@ const registerUser = async (req, res) => {
     });
 
     const user = await newUser.save();
+
+    //creation of the token
     const token = createToken(user._id);
+    //sending the token to the user..
     res.json({ success: true, token });
   } catch (error) {
     console.log(error);

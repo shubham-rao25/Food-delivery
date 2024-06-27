@@ -1,9 +1,11 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useReducer, useState } from "react";
 import { food_list } from "../assets/assets";
 export const StoreContext = createContext(null);
 
 const StorContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
+  const url = "http://localhost:4000";
+  const [token, setToken] = useState("");
 
   // this is the function that helps to add item to the cart
   const addToCart = (itemId) => {
@@ -42,6 +44,14 @@ const StorContextProvider = (props) => {
 
   //this is the context that can be accessed by all the components of the website globally
 
+  //this is the used effect inorder to keep the user logged in even if he refreshed
+  //no logout on refresh
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      setToken(localStorage.getItem("token"));
+    }
+  }, []);
   const contextValue = {
     food_list,
     cartItems,
@@ -49,6 +59,9 @@ const StorContextProvider = (props) => {
     addToCart,
     removeFromCart,
     getTotalCartAmount,
+    url,
+    token,
+    setToken,
   };
   return (
     <StoreContext.Provider value={contextValue}>

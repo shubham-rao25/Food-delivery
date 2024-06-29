@@ -5,7 +5,7 @@ import {
   getCart,
 } from "../controllers/cartController.js";
 import authMiddleware from "../middleware/auth.js";
-
+//authMiddleware is used here to aunthenticate the user with the help of token present in the header
 const cartRouter = express.Router();
 
 cartRouter.post("/add", authMiddleware, addToCart);

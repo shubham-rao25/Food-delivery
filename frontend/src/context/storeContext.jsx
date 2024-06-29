@@ -1,6 +1,7 @@
 import { createContext, useEffect, useReducer, useState } from "react";
 export const StoreContext = createContext(null);
 import axios from "axios";
+import { set } from "mongoose";
 
 //this is the context that can be accessed by all the components of the website globally
 
@@ -11,17 +12,31 @@ const StorContextProvider = (props) => {
   const [food_list, setFoodList] = useState([]);
 
   // this is the function that helps to add item to the cart
-  const addToCart = (itemId) => {
+  const addToCart = async (itemId) => {
     if (!cartItems[itemId]) {
       setCartItems((prev) => ({ ...prev, [itemId]: 1 }));
     } else {
       setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
     }
+    if (token) {
+      await axios.post(
+        url + "/api/cart/add",
+        { itemId },
+        { headers: { token } }
+      );
+    }
   };
 
   //function to remove the items from the cart
-  const removeFromCart = (itemId) => {
+  const removeFromCart = async (itemId) => {
     setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }));
+    if (token) {
+      await axios.post(
+        url + "/api/cart/remove",
+        { itemId },
+        { headers: { token } }
+      );
+    }
   };
 
   //use to request the data from the API endPoint
@@ -50,7 +65,14 @@ const StorContextProvider = (props) => {
     const response = await axios.get(url + "/api/food/list");
     setFoodList(response.data.data);
   };
-
+  const loadCartData = async (token) => {
+    const response = await axios.post(
+      url + "/api/cart/get",
+      {},
+      { headers: { token } }
+    );
+    setCartItems(response.data.cartData);
+  };
   //this is the used effect inorder to keep the user logged in even if he refreshed
   //no logout on refresh
   useEffect(() => {
@@ -58,6 +80,7 @@ const StorContextProvider = (props) => {
       await fetchFood();
       if (localStorage.getItem("token")) {
         setToken(localStorage.getItem("token"));
+        loadCartData(localStorage.getItem("token"));
       }
     }
     loadData();

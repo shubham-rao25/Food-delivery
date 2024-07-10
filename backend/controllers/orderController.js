@@ -24,7 +24,7 @@ const placeOrder = async (req, res) => {
     //line item is neccessary for the stripe payment to happen
     const line_items = req.body.items.map((item) => ({
       price_data: {
-        currency: "aud",
+        currency: "inr",
         product_data: {
           name: item.name,
         },
@@ -34,7 +34,7 @@ const placeOrder = async (req, res) => {
     }));
     line_items.push({
       price_data: {
-        currency: "aud",
+        currency: "inr",
         price_data: {
           name: "Delivery charges",
         },
@@ -51,7 +51,10 @@ const placeOrder = async (req, res) => {
     });
 
     res.json({ success: true, session_url: session.url });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Error" });
+  }
 };
 
 export { placeOrder };
